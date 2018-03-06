@@ -25,8 +25,8 @@ class MonitorService(object):
 
 	def __init__(self):
 		self.pidfile_timeout = 1
-		self.stdin_path = '/dev/null'
-		self.stdout_path = '/dev/null'
+		self.stdin_path = '/tmp/monitorservice.log'
+		self.stdout_path = '/tmp/monitorservice.log'
 		self.stderr_path = '/tmp/monitorservice.log'
 		self.pidfile_path = '/tmp/daemon.pid'
 
@@ -41,7 +41,7 @@ class MonitorService(object):
 	def run(self):
 		while True:
 			for service in self.servicelist:
-				if self.isProcessRunning(service):
+				if not self.isProcessRunning(service):
 					self.logger.info("Found service: {}".format(service))
 					self.logger.info('Executing: {}'.format(apps[service]))
 					call(apps[service], shell=True)
