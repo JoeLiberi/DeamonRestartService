@@ -7,6 +7,18 @@ from daemon import runner
 import subprocess
 import logging
 import re
+import imaplib
+import socket
+import ssl
+import email
+import re
+import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from subprocess import call
+from subprocess import Popen, PIPE
+from config import services as apps
 
 
 class MonitorService(object):
@@ -19,33 +31,25 @@ class MonitorService(object):
 		self.pidfile_timeout = 1
 
 		# Command and service list
-		self.commandlist = []
-		self.servicelist = []
+		self.servicelist = apps.keys()
 
 		# Set logging level
 		logging.basicConfig(level=logging.INFO)
 		self.logger = logging.getLogger(__name__)
 
-		# Read the config file
-		with open('config.txt', 'r') as file:
-			for line in file:
-				self.servicelist.append(line)
-				command = ['systemctl', "stop", "{}".format(line.strip('\n'))]
-				self.commandlist.append(command)
 
 	def run(self):
 		while True:
-			for service, cmd in zip(self.servicelist, self.commandlist):
+			for service in self.servicelist:
 				if self.isProcessRunning(service):
 					self.logger.info("Found service: {}".format(service))
-					self.logger.info('Executing: {}'.format(cmd))
-					subprocess.call(cmd, shell=True)
-
+					self.logger.info('Executing: {}'.format(apps[service]))
+					call(apps[service], shell=True)
 
 			time.sleep(1)
 
 	def findProcess(self, processId):
-		ps = subprocess.Popen("ps aux | grep {} | grep -v grep".format(processId), shell=True, stdout=subprocess.PIPE)
+		ps = subprocess.Popen("ps aux | grep {} | grep -v grep | grep -v monitorservice".format(processId), shell=True, stdout=subprocess.PIPE)
 		output = ps.stdout.read()
 		ps.stdout.close()
 		ps.wait()
@@ -63,8 +67,8 @@ if __name__ == '__main__':
 	
 	app = MonitorService()
 	daemon_runner = runner.DaemonRunner(app)
-	daemon_gid = grp.getgrnam('m4punk').gr_gid
-	daemon_uid = pwd.getpwnam('m4punk').pw_uid
+	daemon_gid = grp.getgrnam('root').gr_gid
+	daemon_uid = pwd.getpwnam('root').pw_uid
 	daemon_runner.daemon_context.gid = daemon_gid
 	daemon_runner.daemon_context.uid = daemon_uid
 	daemon_runner.do_action()
