@@ -24,10 +24,6 @@ from config import services as apps
 class MonitorService(object):
 
 	def __init__(self):
-		self.stdin_path = '/dev/null'
-		self.stdout_path = '/dev/null'
-		self.stderr_path = '/tmp/monitorservice.log'
-		self.pidfile_path = '/tmp/daemon.pid'
 		self.pidfile_timeout = 1
 
 		# Command and service list
@@ -67,4 +63,10 @@ if __name__ == '__main__':
 	
 	app = MonitorService()
 	daemon_runner = runner.DaemonRunner(app)
+	daemon_context = runner.DaemonContext()
+	daemon_context.stdin = open(app.stdin_path, 'r') 
+	# for linux /dev/tty must be opened without buffering and with b
+	daemon_context.stdout = open(app.stdout_path, 'wb+',buffering=0)
+	# w+ -> wb+
+	daemon_context.stderr = open(app.stderr_path, 'wb+', buffering=0)
 	daemon_runner.do_action()
