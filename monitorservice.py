@@ -67,8 +67,4 @@ if __name__ == '__main__':
 	
 	app = MonitorService()
 	daemon_runner = runner.DaemonRunner(app)
-	daemon_gid = grp.getgrnam('root').gr_gid
-	daemon_uid = pwd.getpwnam('root').pw_uid
-	daemon_runner.daemon_context.gid = daemon_gid
-	daemon_runner.daemon_context.uid = daemon_uid
 	daemon_runner.do_action()
