@@ -44,7 +44,9 @@ class MonitorService(object):
 				if not self.isProcessRunning(service):
 					self.logger.info("Found service: {}".format(service))
 					self.logger.info('Executing: {}'.format(apps[service]))
-					call(apps[service], shell=True)
+					call(apps[service])
+				else:
+					self.logger.debug("{} is running".format(service))
 
 			time.sleep(1)
 
