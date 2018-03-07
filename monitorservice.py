@@ -87,7 +87,7 @@ class MonitorService(object):
 
 		sent_from = self.gmailuser  
 		to = ", ".join(config.email_to)
-		subject = 'Proccess Monitor'
+		subject = 'Process Monitor'
 
 		# Create timestamp
 		ts = time.time()
