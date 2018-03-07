@@ -50,7 +50,7 @@ class MonitorService(object):
 					self.logger.info('Executing: {}'.format(apps[service]))
 					call(apps[service])
 					self.sendmail(service)
-					
+
 				else:
 					self.logger.debug("{} is running".format(service))
 
@@ -86,7 +86,7 @@ class MonitorService(object):
 	def sendmail(self, service):
 
 		sent_from = self.gmailuser  
-		to = config.email_to  
+		to = ", ".join(config.email_to)
 		subject = 'Proccess Monitor'
 
 		# Create timestamp
