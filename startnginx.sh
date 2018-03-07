@@ -1,3 +1,3 @@
 #!/bin/sh
 
-sudo systemctl restart nginx >> startservice.log
+sudo systemctl restart nginx
