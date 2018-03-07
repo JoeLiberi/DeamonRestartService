@@ -1,4 +1,5 @@
 import time
+import datetime
 import grp
 import pwd
 import argparse
@@ -19,6 +20,7 @@ from email.mime.multipart import MIMEMultipart
 from subprocess import call
 from subprocess import Popen, PIPE
 from config import services as apps
+import config
 
 
 class MonitorService(object):
@@ -29,6 +31,8 @@ class MonitorService(object):
 		self.stdout_path = '/tmp/monitorservice.log'
 		self.stderr_path = '/tmp/monitorservice.log'
 		self.pidfile_path = '/tmp/daemon.pid'
+		self.gmailuser = config.gmail["user"]
+		self.gmailpassword = config.gmail["password"]
 
 		# Command and service list
 		self.servicelist = apps.keys()
@@ -45,6 +49,8 @@ class MonitorService(object):
 					self.logger.info("Found service: {}".format(service))
 					self.logger.info('Executing: {}'.format(apps[service]))
 					call(apps[service])
+					self.sendmail(service)
+					
 				else:
 					self.logger.debug("{} is running".format(service))
 
@@ -64,6 +70,38 @@ class MonitorService(object):
 			return False
 		else:
 			return True
+
+	def connecttogmail(self):
+		try:
+			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+			server.ehlo()
+			server.login(self.gmailuser, self.gmailpassword)
+			self.logger.info("Succesfully logged into Gmail")
+
+			return server
+		except:  
+			self.logger.info("Could not connect to gmail")
+			return None
+
+	def sendmail(self, service):
+
+		sent_from = self.gmailuser  
+		to = config.email_to  
+		subject = 'Proccess Monitor'
+
+		# Create timestamp
+		ts = time.time()
+		st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+
+		body = config.email_body.format(service=service, timestamp=st)
+		text = config.email_text.format(sent_from=sent_from, to=to, subject=subject, body=body)
+
+		s = self.connecttogmail()
+		self.logger.info("Sending mail.....")
+		s.sendmail(sent_from, to, text)
+		s.close()
+		self.logger.info("mail sent")
+
 
 if __name__ == '__main__':
 	
