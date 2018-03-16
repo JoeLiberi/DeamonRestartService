@@ -12,7 +12,7 @@ email_to = ["email1@gmail.com", "email2@labworthy.com"]
 
 email_body = """\
 
-	Restarted the following proccesses succesfully:
+	Restarted the following proccesses succesfully on {webapp}:
 		{services} at {timestamp}
 
 """

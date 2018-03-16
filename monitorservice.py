@@ -33,6 +33,7 @@ class MonitorService(object):
 		self.pidfile_path = '/tmp/daemon.pid'
 		self.gmailuser = config.gmail["user"]
 		self.gmailpassword = config.gmail["password"]
+		self.webapp = config.webapp
 
 		# Command and service list
 		self.servicelist = apps.keys()
@@ -105,7 +106,7 @@ class MonitorService(object):
 		ts = time.time()
 		st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
 
-		body = config.email_body.format(service=service, timestamp=st)
+		body = config.email_body.format(service=service, timestamp=st, webapp=self.webapp)
 		text = email_text.format(sent_from=sent_from, to=to, subject=subject, body=body)
 
 		s = self.connecttogmail()
