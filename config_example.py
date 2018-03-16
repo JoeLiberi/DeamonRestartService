@@ -9,18 +9,6 @@ services = {
 
 email_to = ["email1@gmail.com", "email2@labworthy.com"]
 
-email_text = """\
-Subject: {subject}
-
-
-From: {sent_from}  
-To: {to}  
-
-
-{body}
-
-
-"""
 
 email_body = """\
 

@@ -84,6 +84,18 @@ class MonitorService(object):
 			return None
 
 	def sendmail(self, service):
+		email_text = """\
+		Subject: {subject}
+
+
+		From: {sent_from}  
+		To: {to}  
+
+
+		{body}
+
+
+		"""
 
 		sent_from = self.gmailuser  
 		to = ", ".join(config.email_to)
@@ -94,7 +106,7 @@ class MonitorService(object):
 		st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
 
 		body = config.email_body.format(service=service, timestamp=st)
-		text = config.email_text.format(sent_from=sent_from, to=to, subject=subject, body=body)
+		text = email_text.format(sent_from=sent_from, to=to, subject=subject, body=body)
 
 		s = self.connecttogmail()
 		self.logger.info("Sending mail.....")
